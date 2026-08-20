@@ -75,6 +75,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReservationResponse> getMyReservations(
             String email
     ) {

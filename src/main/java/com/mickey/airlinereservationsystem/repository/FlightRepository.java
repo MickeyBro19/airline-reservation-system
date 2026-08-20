@@ -16,14 +16,26 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
 
     Optional<Flight> findByFlightNumber(String flightNumber);
 
-    @Query("""
-            SELECT f
-            FROM Flight f
-            WHERE f.departureAirport.code = :from
-              AND f.arrivalAirport.code = :to
-              AND f.departureTime >= :start
-              AND f.departureTime <= :end
-            """)
+    @Query(
+            value = """
+                    SELECT f
+                    FROM Flight f
+                    JOIN FETCH f.departureAirport
+                    JOIN FETCH f.arrivalAirport
+                    WHERE f.departureAirport.code = :from
+                      AND f.arrivalAirport.code = :to
+                      AND f.departureTime >= :start
+                      AND f.departureTime <= :end
+                    """,
+            countQuery = """
+                    SELECT COUNT(f)
+                    FROM Flight f
+                    WHERE f.departureAirport.code = :from
+                      AND f.arrivalAirport.code = :to
+                      AND f.departureTime >= :start
+                      AND f.departureTime <= :end
+                    """
+    )
     Page<Flight> searchFlights(
             @Param("from") String from,
             @Param("to") String to,
